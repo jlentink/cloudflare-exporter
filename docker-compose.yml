@@ -1,0 +1,20 @@
+services:
+  cloudflare-exporter:
+    build: ./cloudflare-exporter
+    # or use a pre-built image if you push to a registry:
+    # image: ghcr.io/toemaar/cloudflare-exporter:latest
+    container_name: cloudflare-exporter
+    ports:
+      - "9199:9199"
+    environment:
+      - CF_API_TOKEN=${CF_API_TOKEN}
+      # Optional — defaults shown:
+      # PORT=9199
+      # SCRAPE_INTERVAL_SECONDS=60
+      # CF_SINCE_MINUTES=1440   # 24h window (max on free tier)
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:9199/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
